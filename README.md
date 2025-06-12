@@ -25,7 +25,7 @@ A robust and secure Django-based authentication system with advanced security fe
 
 - Python 3.8+
 - Django 4.0+
-- SQLite (default) / PostgreSQL (recommended for production)
+- SQLite (default)
 - pytest for testing
 - Bootstrap for frontend styling
 
