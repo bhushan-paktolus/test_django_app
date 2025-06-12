@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Profile Header -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-5">
+                    <div class="text-center">
+                        <div class="mb-4">
+                            <i class="fas fa-user-circle fa-4x text-primary"></i>
+                        </div>
+                        <h2 class="h3 mb-2">{{ user.get_full_name }}</h2>
+                        <p class="text-muted mb-4">{{ user.get_role_display }}</p>
+                        
+                        <!-- User Info Badges -->
+                        <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                            <span class="badge bg-primary">
+                                <i class="fas fa-user me-1"></i>{{ user.username }}
+                            </span>
+                            <span class="badge bg-info">
+                                <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                            </span>
+                            {% if user.phone %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-phone me-1"></i>{{ user.phone }}
+                            </span>
+                            {% endif %}
+                            <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                <i class="fas {% if user.is_active %}fa-check-circle{% else %}fa-times-circle{% endif %} me-1"></i>
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Account Details -->
+                        <div class="row mt-4 text-start">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-1">Member Since</h6>
+                                <p class="mb-3">{{ user.date_joined|date:"F j, Y, g:i a" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="small text-muted mb-1">Last Login</p>
+                                <p class="mb-3">{{ user.last_login|date:"F j, Y, g:i a"|default:"Never" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <h3 class="h4 mb-4">Update Profile</h3>
+                    <form method="post" novalidate class="row g-3">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="col-12">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Security -->
+            <div class="card bg-light border-0 mt-4">
+                <div class="card-body p-4">
+                    <h3 class="h5 mb-4">Account Security</h3>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-lock text-primary me-3"></i>
+                                <div>
+                                    <h4 class="h6 mb-1">Change Password</h4>
+                                    <p class="small text-muted mb-2">Update your password regularly</p>
+                                    <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-key me-1"></i>Change Password
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt text-primary me-3"></i>
+                                <div>
+                                    <h4 class="h6 mb-1">Two-Factor Auth</h4>
+                                    <p class="small text-muted mb-2">Enable additional security</p>
+                                    <button class="btn btn-sm btn-outline-primary" disabled>
+                                        <i class="fas fa-plus me-1"></i>Enable 2FA
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card border-danger border-0 shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h3 class="h5 text-danger mb-4">Danger Zone</h3>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="h6 mb-1">Delete Account</h4>
+                            <p class="small text-muted mb-0">This action cannot be undone</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                            <i class="fas fa-trash-alt me-1"></i>Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

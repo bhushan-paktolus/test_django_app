@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="fas fa-sign-in-alt fa-3x text-primary mb-3"></i>
+                        <h2 class="h3 mb-3">Welcome Back</h2>
+                        <p class="text-muted">Sign in to access your account</p>
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="mb-2">
+                            <a href="{% url 'password_reset_request' %}" class="text-decoration-none">
+                                <i class="fas fa-key me-2"></i>Forgot Password?
+                            </a>
+                        </p>
+                        <p class="mb-0">
+                            Don't have an account? 
+                            <a href="{% url 'register' %}" class="text-decoration-none">
+                                <i class="fas fa-user-plus me-1"></i>Register here
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Features -->
+            <div class="card bg-light border-0 mt-4">
+                <div class="card-body p-4">
+                    <h3 class="h6 mb-3 text-center">Security Features</h3>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt text-primary me-3"></i>
+                                <div>
+                                    <h4 class="h6 mb-1">Secure Login</h4>
+                                    <p class="small text-muted mb-0">Protected by SSL encryption</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-shield text-primary me-3"></i>
+                                <div>
+                                    <h4 class="h6 mb-1">Account Protection</h4>
+                                    <p class="small text-muted mb-0">Rate limiting enabled</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

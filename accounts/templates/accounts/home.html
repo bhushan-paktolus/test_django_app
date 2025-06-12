@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Authentication System{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 bg-primary text-white shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h2 class="mb-2">Welcome{% if user.is_authenticated %}, {{ user.get_full_name|default:user.email }}{% endif %}!</h2>
+                            <p class="mb-0 opacity-75">Welcome to your authentication system dashboard.</p>
+                        </div>
+                        <div class="flex-shrink-0 ms-3">
+                            <i class="fas fa-shield-alt fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated %}
+        <!-- Quick Actions -->
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-md bg-primary-subtle">
+                                    <i class="fas fa-user-circle fa-lg text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title mb-0">Profile</h5>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">Manage your profile information and settings.</p>
+                        <a href="{% url 'profile' %}" class="btn btn-primary">View Profile</a>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_staff or user.is_superuser %}
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-md bg-success-subtle">
+                                    <i class="fas fa-users fa-lg text-success"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title mb-0">User Management</h5>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">Manage users, roles, and permissions.</p>
+                        <a href="{% url 'user_list' %}" class="btn btn-success">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="avatar avatar-md bg-warning-subtle">
+                                    <i class="fas fa-cog fa-lg text-warning"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="card-title mb-0">Admin Panel</h5>
+                            </div>
+                        </div>
+                        <p class="card-text text-muted">Access the Django admin interface.</p>
+                        <a href="{% url 'admin:index' %}" class="btn btn-warning">Go to Admin</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Security Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Security Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="avatar avatar-sm bg-info-subtle">
+                                            <i class="fas fa-key text-info"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">Password</h6>
+                                        <p class="text-muted small mb-0">Change your account password</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-3">
+                                        <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-info">Change Password</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="avatar avatar-sm bg-danger-subtle">
+                                            <i class="fas fa-sign-out-alt text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">Session</h6>
+                                        <p class="text-muted small mb-0">Sign out from your account</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-3">
+                                        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger">Logout</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- Guest Actions -->
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-5">
+                        <div class="avatar avatar-lg bg-primary-subtle mb-4 mx-auto">
+                            <i class="fas fa-sign-in-alt fa-lg text-primary"></i>
+                        </div>
+                        <h4>Sign In</h4>
+                        <p class="text-muted mb-4">Already have an account? Sign in to access your dashboard.</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Login</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center p-5">
+                        <div class="avatar avatar-lg bg-success-subtle mb-4 mx-auto">
+                            <i class="fas fa-user-plus fa-lg text-success"></i>
+                        </div>
+                        <h4>Create Account</h4>
+                        <p class="text-muted mb-4">New to our platform? Create an account to get started.</p>
+                        <a href="{% url 'register' %}" class="btn btn-success btn-lg">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

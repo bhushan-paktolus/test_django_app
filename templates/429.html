@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Too Many Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h2 class="text-danger mb-4">Too Many Requests</h2>
+                    <p class="lead">You have made too many requests. Please try again later.</p>
+                    <p class="text-muted">For security reasons, we limit the number of requests from a single IP address.</p>
+                    <a href="/" class="btn btn-primary mt-3">Return Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

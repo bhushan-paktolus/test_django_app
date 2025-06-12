@@ -1,0 +1,58 @@
+# Python
+*.py[cod]
+__pycache__/
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+bin/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.env
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Testing
+.coverage
+.tox/
+.pytest_cache/
+htmlcov/
+.coverage.*
+coverage.xml
+*.cover
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Project specific
+logs/
+certbot/
+nginx/conf.d/
+accounts_backup/
+templates/accounts_backup/
+
