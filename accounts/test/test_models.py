@@ -2,9 +2,10 @@ import pytest
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from accounts.models import CustomUser, PasswordResetOTP, UserActivity
+from accounts.models import CustomUser, PasswordResetOTP, UserActivity, BackupCode
 from django.utils import timezone
 from datetime import timedelta
+import re
 
 class TestCustomUser(TestCase):
     def setUp(self):
@@ -206,4 +207,106 @@ class TestUserActivity(TestCase):
             user_agent='test-agent'
         )
         expected_str = f"{self.user.email} - login at {activity.timestamp}"
-        self.assertEqual(str(activity), expected_str) 
+        self.assertEqual(str(activity), expected_str)
+
+class TestBackupCode(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            email='test@example.com',
+            password='TestPass123!'
+        )
+
+    def test_generate_backup_codes(self):
+        """Test backup code generation"""
+        # Generate initial codes
+        codes = BackupCode.generate_backup_codes(self.user)
+        
+        # Verify number of codes
+        self.assertEqual(len(codes), 8)
+        self.assertEqual(BackupCode.objects.filter(user=self.user).count(), 8)
+        
+        # Verify code format (8 character hex)
+        for code in codes:
+            self.assertTrue(re.match(r'^[0-9A-F]{8}$', code))
+        
+        # Store old codes and mark one as used
+        old_codes = list(BackupCode.objects.filter(user=self.user))
+        used_code = BackupCode.objects.get(code=codes[0])
+        used_code.used = True
+        used_code.used_at = timezone.now()
+        used_code.save()
+        
+        # Generate new codes
+        new_codes = BackupCode.generate_backup_codes(self.user)
+        
+        # Verify unused old codes are deleted but used code is kept
+        self.assertTrue(BackupCode.objects.filter(id=used_code.id).exists())
+        for old_code in old_codes:
+            if old_code.id != used_code.id:
+                self.assertFalse(BackupCode.objects.filter(id=old_code.id).exists())
+        
+        # Verify new codes are created
+        self.assertEqual(len(new_codes), 8)
+        self.assertEqual(BackupCode.objects.filter(user=self.user).count(), 9)  # 8 new + 1 used
+
+    def test_backup_code_usage(self):
+        """Test backup code usage tracking"""
+        codes = BackupCode.generate_backup_codes(self.user)
+        code_obj = BackupCode.objects.get(code=codes[0])
+        
+        # Initially not used
+        self.assertFalse(code_obj.used)
+        self.assertIsNone(code_obj.used_at)
+        
+        # Mark as used
+        code_obj.used = True
+        code_obj.used_at = timezone.now()
+        code_obj.save()
+        
+        # Verify used status
+        code_obj.refresh_from_db()
+        self.assertTrue(code_obj.used)
+        self.assertIsNotNone(code_obj.used_at)
+
+    def test_backup_code_cleanup(self):
+        """Test cleanup of old backup codes"""
+        # Generate initial codes
+        old_codes = BackupCode.generate_backup_codes(self.user)
+        
+        # Mark one code as used
+        used_code = BackupCode.objects.get(code=old_codes[0])
+        used_code.used = True
+        used_code.used_at = timezone.now()
+        used_code.save()
+        
+        # Generate new codes
+        new_codes = BackupCode.generate_backup_codes(self.user)
+        
+        # Verify used code is kept but unused old codes are deleted
+        self.assertTrue(BackupCode.objects.filter(code=old_codes[0]).exists())
+        for code in old_codes[1:]:
+            self.assertFalse(BackupCode.objects.filter(code=code).exists())
+        
+        # Verify total number of codes (8 new + 1 old used)
+        self.assertEqual(BackupCode.objects.filter(user=self.user).count(), 9)
+
+    def test_backup_code_uniqueness(self):
+        """Test that backup codes are unique per user"""
+        # Create another user
+        other_user = CustomUser.objects.create_user(
+            email='other@example.com',
+            password='TestPass123!'
+        )
+        
+        # Generate codes for both users
+        user1_codes = BackupCode.generate_backup_codes(self.user)
+        user2_codes = BackupCode.generate_backup_codes(other_user)
+        
+        # Verify no codes are shared between users
+        user1_code_set = set(user1_codes)
+        user2_code_set = set(user2_codes)
+        self.assertEqual(len(user1_code_set.intersection(user2_code_set)), 0)
+        
+        # Verify each user has correct number of codes
+        self.assertEqual(BackupCode.objects.filter(user=self.user).count(), 8)
+        self.assertEqual(BackupCode.objects.filter(user=other_user).count(), 8) 

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create New User{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1">Create New User</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'user_list' %}" class="text-decoration-none">Users</a></li>
+                            <li class="breadcrumb-item active">Create User</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="{% url 'user_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Users
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post" novalidate class="row g-3">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <div class="col-12 mb-4">
+                            <h5 class="card-title mb-3">Personal Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.first_name|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.last_name|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="col-12 mb-4">
+                            <h5 class="card-title mb-3">Contact Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.email|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.phone|as_crispy_field }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Settings -->
+                        <div class="col-12 mb-4">
+                            <h5 class="card-title mb-3">Account Settings</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.password1|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.password2|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.role|as_crispy_field }}
+                                </div>
+                                {% if form.is_active %}
+                                <div class="col-md-6">
+                                    {{ form.is_active|as_crispy_field }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="col-12 border-top pt-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'user_list' %}" class="btn btn-light">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Create User
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>
+                        Creating a New User
+                    </h5>
+                    <div class="text-muted">
+                        <p class="mb-3">Please note the following when creating a new user:</p>
+                        <ul class="mb-0">
+                            <li class="mb-2">All fields marked with an asterisk (*) are required</li>
+                            <li class="mb-2">Passwords must be at least 8 characters long</li>
+                            <li class="mb-2">Email address must be unique in the system</li>
+                            <li class="mb-2">User roles determine access levels in the system</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Password strength indicator
+    const password1Input = document.querySelector('input[name="password1"]');
+    const password2Input = document.querySelector('input[name="password2"]');
+    
+    function updatePasswordStrength(input) {
+        if (!input) return;
+        
+        const value = input.value;
+        const strength = {
+            0: "Very Weak",
+            1: "Weak",
+            2: "Medium",
+            3: "Strong",
+            4: "Very Strong"
+        };
+        
+        let score = 0;
+        if (value.length >= 8) score++;
+        if (value.match(/[a-z]/) && value.match(/[A-Z]/)) score++;
+        if (value.match(/\d/)) score++;
+        if (value.match(/[^a-zA-Z\d]/)) score++;
+        
+        const feedbackDiv = input.parentElement.querySelector('.password-strength');
+        if (!feedbackDiv) {
+            const div = document.createElement('div');
+            div.className = 'password-strength small mt-1';
+            input.parentElement.appendChild(div);
+        }
+        
+        const strengthClass = score < 2 ? 'text-danger' : score < 3 ? 'text-warning' : 'text-success';
+        input.parentElement.querySelector('.password-strength').innerHTML = 
+            `<i class="fas fa-shield-alt me-1"></i>Password Strength: <span class="${strengthClass}">${strength[score]}</span>`;
+    }
+    
+    if (password1Input) {
+        password1Input.addEventListener('input', () => updatePasswordStrength(password1Input));
+    }
+});
+</script>
+{% endblock %} 

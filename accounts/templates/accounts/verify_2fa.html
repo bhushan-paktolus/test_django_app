@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verify Two-Factor Authentication{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="avatar avatar-xl bg-primary bg-opacity-10 rounded-circle mx-auto mb-4">
+                            <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                        </div>
+                        <h3>Two-Factor Authentication</h3>
+                        <p class="text-muted">
+                            Please enter the verification code from your authenticator app.<br>
+                            If you've lost access to your authenticator, you can use a backup code.
+                        </p>
+                    </div>
+
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <label for="token" class="form-label">Verification Code or Backup Code</label>
+                            <input type="text" class="form-control form-control-lg text-center" 
+                                   id="token" name="token" maxlength="8" required 
+                                   placeholder="Enter 6-digit code or backup code"
+                                   autocomplete="off" autofocus>
+                            <div class="form-text text-muted">
+                                Enter the 6-digit code from your authenticator app or an unused backup code
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-check me-2"></i>Verify
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Lost access to your authenticator and backup codes?<br>
+                            Please contact support for assistance.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+.avatar {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}
+{% endblock %} 

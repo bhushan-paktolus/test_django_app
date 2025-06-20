@@ -7,6 +7,9 @@ from django.core.validators import RegexValidator, MinLengthValidator, EmailVali
 import re
 import random
 from django.core.exceptions import ValidationError
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from django.utils.translation import gettext_lazy as _
+import secrets
 
 logger = logging.getLogger('accounts')
 
@@ -39,8 +42,8 @@ class CustomUserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         if password:
             user.set_password(password)
-        user.save(using=self._db)
-        logger.info(f"Created new user: {email}")
+            user.save(using=self._db)
+            logger.info(f"Created new user: {email}")
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
@@ -145,6 +148,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     date_joined = models.DateTimeField(default=timezone.now)
 
+    # 2FA fields
+    two_factor_enabled = models.BooleanField(default=False)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -218,6 +224,35 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         else:
             logger.info(f"User account updated: {self.email}")
 
+    def enable_2fa(self):
+        """Enable 2FA for the user"""
+        if not self.two_factor_enabled:
+            # Delete any existing unconfirmed devices
+            TOTPDevice.objects.filter(user=self, confirmed=False).delete()
+            # Create new device
+            device = TOTPDevice.objects.create(
+                user=self,
+                name=f"Default TOTP device for {self.email}",
+                confirmed=False
+            )
+            return device
+        return None
+
+    def disable_2fa(self):
+        """Disable 2FA for the user"""
+        if self.two_factor_enabled:
+            TOTPDevice.objects.filter(user=self).delete()
+            BackupCode.objects.filter(user=self).delete()
+            self.two_factor_enabled = False
+            self.save()
+
+    def get_totp_device(self):
+        """Get user's TOTP device"""
+        devices = TOTPDevice.objects.devices_for_user(self)
+        for device in devices:
+            return device
+        return None
+
 class PasswordResetOTP(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
@@ -290,6 +325,36 @@ class UserActivity(models.Model):
         
     def __str__(self):
         return f"{self.user.email} - {self.activity_type} at {self.timestamp}"
+
+class BackupCode(models.Model):
+    """Model to store 2FA backup codes"""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='backup_codes')
+    code = models.CharField(max_length=10)  # Store hashed backup codes
+    used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _('Backup Code')
+        verbose_name_plural = _('Backup Codes')
+
+    @classmethod
+    def generate_backup_codes(cls, user, count=8):
+        """Generate new backup codes for a user"""
+        # Delete existing unused codes
+        cls.objects.filter(user=user, used=False).delete()
+        
+        # Generate new codes
+        codes = []
+        for _ in range(count):
+            # Generate a random 8-character code
+            code = secrets.token_hex(4).upper()  # 8 characters
+            backup_code = cls.objects.create(
+                user=user,
+                code=code
+            )
+            codes.append(code)
+        return codes
 
 
 

@@ -3,78 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Authentication System{% endblock %}</title>
+    <title>{% block title %}Paktolus India{% endblock %}</title>
     
-    <!-- Bootstrap 5 CSS -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Plus Jakarta Sans Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --light-bg: #f8f9fa;
+            --transition-all: all 0.3s ease;
         }
         
         body {
-            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
 
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.5rem;
+        main {
+            flex: 1 0 auto;
         }
 
-        .nav-link {
-            font-weight: 500;
+        /* Dark mode variables */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --text-primary: #e2e8f0;
+                --text-secondary: #a0aec0;
+                --light-bg: #2d3748;
         }
 
-        .card {
-            border: none;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease;
+            body {
+                background-color: #1a202c;
+                color: var(--text-primary);
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .btn {
-            padding: 0.5rem 1.5rem;
-            font-weight: 500;
-            border-radius: 0.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .form-control {
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
-        }
-
-        .alert {
-            border-radius: 0.5rem;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 1rem 0;
-            background-color: #f8f9fa;
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column h-100">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-glass">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-shield-alt text-primary me-2"></i>Auth System
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="fas fa-shield-alt text-primary me-2"></i>
+                <span>Auth System</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -84,35 +64,35 @@
                     {% if user.is_authenticated %}
                         {% if user.is_staff or user.is_superuser %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'user_list' %}">
-                                <i class="fas fa-users me-1"></i>Users
+                            <a class="nav-link d-flex align-items-center" href="{% url 'user_list' %}">
+                                <i class="fas fa-users me-2"></i>Users
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'admin:index' %}">
-                                <i class="fas fa-cog me-1"></i>Admin
+                            <a class="nav-link d-flex align-items-center" href="{% url 'admin:index' %}">
+                                <i class="fas fa-cog me-2"></i>Admin
                             </a>
                         </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">
-                                <i class="fas fa-user me-1"></i>Profile
+                            <a class="nav-link d-flex align-items-center" href="{% url 'profile' %}">
+                                <i class="fas fa-user me-2"></i>Profile
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">
-                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            <a class="nav-link d-flex align-items-center" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">
-                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            <a class="nav-link d-flex align-items-center" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">
-                                <i class="fas fa-user-plus me-1"></i>Register
+                            <a class="nav-link d-flex align-items-center" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus me-2"></i>Register
                             </a>
                         </li>
                     {% endif %}
@@ -123,12 +103,12 @@
 
     <!-- Messages -->
     {% if messages %}
-    <div class="container mt-3">
+    <div class="container mt-4">
         {% for message in messages %}
-        <div class="alert {{ message.tags|default:'alert-info' }} alert-dismissible fade show" role="alert">
+        <div class="alert scale-in {{ message.tags|default:'alert-info' }} alert-dismissible fade show d-flex align-items-center" role="alert">
             <i class="fas {% if message.tags == 'alert-success' %}fa-check-circle{% elif message.tags == 'alert-danger' %}fa-exclamation-circle{% elif message.tags == 'alert-warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2"></i>
-            {{ message|safe }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div>{{ message|safe }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
     </div>
@@ -136,22 +116,246 @@
 
     <!-- Main Content -->
     <main class="flex-shrink-0">
-        <div class="container my-4">
             {% block content %}{% endblock %}
-        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer mt-auto py-3 bg-light">
-        <div class="container text-center">
-            <span class="text-muted">© {% now "Y" %} Authentication System. All rights reserved.</span>
+    <footer class="footer mt-auto py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Company Info -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-company pe-lg-5">
+                        <h5 class="mb-3 text-primary fw-bold">
+                            <i class="fas fa-shield-alt me-2"></i>Paktolus India
+                        </h5>
+                        <p class="text-muted mb-3">
+                            Empowering businesses with innovative technology solutions and secure authentication systems.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="btn btn-light btn-sm me-2" data-bs-toggle="tooltip" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="btn btn-light btn-sm me-2" data-bs-toggle="tooltip" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-light btn-sm me-2" data-bs-toggle="tooltip" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="btn btn-light btn-sm" data-bs-toggle="tooltip" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="mb-3 text-secondary fw-semibold">Quick Links</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <a href="{% url 'home' %}" class="text-muted text-decoration-none hover-primary">Home</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">About Us</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">Services</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Services -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="mb-3 text-secondary fw-semibold">Services</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">Authentication</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">User Management</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">Security Solutions</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-muted text-decoration-none hover-primary">API Integration</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-4 col-md-6">
+                    <h6 class="mb-3 text-secondary fw-semibold">Contact Us</h6>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <span class="text-muted">Office No. 401, 4th Floor, Pride Icon, Kharadi, Pune, Maharashtra 411014</span>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <a href="mailto:info@paktolus.in" class="text-muted text-decoration-none hover-primary">info@paktolus.in</a>
+                        </li>
+                        <li class="mb-3 d-flex align-items-center">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            <a href="tel:+919876543210" class="text-muted text-decoration-none hover-primary">+91 98765 43210</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Bar -->
+            <div class="footer-bottom mt-5 pt-4 border-top">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p class="mb-0 text-muted">
+                            © {% now "Y" %} Paktolus India Pvt. Ltd. All rights reserved.
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                        <ul class="list-inline mb-0">
+                            <li class="list-inline-item">
+                                <a href="#" class="text-muted text-decoration-none hover-primary small">Privacy Policy</a>
+                            </li>
+                            <li class="list-inline-item ms-3">
+                                <a href="#" class="text-muted text-decoration-none hover-primary small">Terms of Use</a>
+                            </li>
+                            <li class="list-inline-item ms-3">
+                                <a href="#" class="text-muted text-decoration-none hover-primary small">Cookie Policy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Font Awesome -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     {% block extra_js %}{% endblock %}
+
+    <!-- Global Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add active class to current nav item
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+
+        // Initialize all tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                delay: { show: 50, hide: 50 }
+            });
+        });
+
+        // Smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+    </script>
+
+    <style>
+    /* Footer Styles */
+    .footer {
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .footer-company {
+        position: relative;
+    }
+
+    .social-links .btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: var(--transition-all);
+        background-color: var(--light-bg);
+        border: none;
+    }
+
+    .social-links .btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    .hover-primary {
+        transition: var(--transition-all);
+    }
+
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+
+    .footer h6 {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+
+    .footer h6:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -0.5rem;
+        width: 30px;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
+
+    .footer ul li {
+        transition: var(--transition-all);
+    }
+
+    .footer ul li:hover {
+        transform: translateX(5px);
+    }
+
+    .footer-bottom {
+        position: relative;
+    }
+
+    /* Dark mode enhancements for footer */
+    @media (prefers-color-scheme: dark) {
+        .footer {
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+
+        .social-links .btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .social-links .btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .footer-bottom {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+    }
+    </style>
 </body>
 </html> 

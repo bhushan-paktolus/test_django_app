@@ -171,49 +171,71 @@ class UserRegisterForm(UserCreationForm):
         return user
 
 class UserEditForm(forms.ModelForm):
+    """Form for editing user details"""
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
+    email = forms.EmailField(required=True)
     phone = forms.CharField(max_length=15, required=True, validators=[phone_regex])
+    role = forms.ChoiceField(choices=CustomUser.ROLE_CHOICES, required=True)
+    is_active = forms.BooleanField(required=False)
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'phone')
+        fields = ('first_name', 'last_name', 'email', 'phone', 'role', 'is_active')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['is_active'].initial = True
+        self.fields['role'].initial = 'user'
+        
+        # Add help texts
+        self.fields['email'].help_text = 'Enter a valid email address'
+        self.fields['phone'].help_text = 'Enter a valid phone number'
+        self.fields['role'].help_text = 'Select the user\'s role'
+        self.fields['is_active'].help_text = 'Uncheck to deactivate the user account'
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email:
+            raise forms.ValidationError('Email is required.')
+        
+        # Check if email exists but exclude current user
+        if CustomUser.objects.filter(email=email).exclude(id=self.instance.id).exists():
+            raise forms.ValidationError('This email is already in use.')
+        
+        return email.lower()
 
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
         if not first_name:
             raise forms.ValidationError('First name is required.')
-        return first_name  # Return without changing case
+        return first_name.strip()
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
         if not last_name:
             raise forms.ValidationError('Last name is required.')
-        return last_name  # Return without changing case
+        return last_name.strip()
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
         if not phone:
             raise forms.ValidationError('Phone number is required.')
-        return phone
+        return phone.strip()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.form_class = 'user-form'
-        self.helper.layout = Layout(
-            Row(
-                Column('first_name', css_class='form-group col-md-6 mb-3'),
-                Column('last_name', css_class='form-group col-md-6 mb-3'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('phone', css_class='form-group col-md-6 mb-3'),
-                css_class='form-row'
-            ),
-            Submit('submit', 'Update Profile', css_class='btn btn-primary')
-        )
+    def clean_role(self):
+        role = self.cleaned_data.get('role')
+        if not role:
+            raise forms.ValidationError('Role is required.')
+        if role not in dict(CustomUser.ROLE_CHOICES):
+            raise forms.ValidationError('Invalid role selected.')
+        return role
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+        return user
 
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField()

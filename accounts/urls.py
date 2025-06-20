@@ -24,4 +24,9 @@ urlpatterns = [
     path('password-change/done/', auth_views.PasswordChangeDoneView.as_view(
         template_name='accounts/password_change_done.html'
     ), name='password_change_done'),
+
+    # 2FA URLs
+    path('2fa/setup/', views.setup_2fa, name='setup_2fa'),
+    path('2fa/disable/', views.disable_2fa, name='disable_2fa'),
+    path('2fa/verify/', views.verify_2fa, name='verify_2fa'),
 ] 

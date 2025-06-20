@@ -92,9 +92,15 @@
                                 <div>
                                     <h4 class="h6 mb-1">Two-Factor Auth</h4>
                                     <p class="small text-muted mb-2">Enable additional security</p>
-                                    <button class="btn btn-sm btn-outline-primary" disabled>
-                                        <i class="fas fa-plus me-1"></i>Enable 2FA
-                                    </button>
+                                    {% if user.two_factor_enabled %}
+                                        <a href="{% url 'disable_2fa' %}" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-times me-1"></i>Disable 2FA
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'setup_2fa' %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-plus me-1"></i>Enable 2FA
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
